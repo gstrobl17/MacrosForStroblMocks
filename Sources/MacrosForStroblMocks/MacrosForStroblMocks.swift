@@ -1,11 +1,14 @@
 // The Swift Programming Language
 // https://docs.swift.org/swift-book
 
-/// A macro that produces both a value and a string containing the
-/// source code that generated the value. For example,
+/// This macro is used to mark variables in an XCTTestCase as being "Strobl" mocks. The **@StroblMock** macro is
+/// used in conjunction with the **@UsesStroblMocks** macro to autogenerate code that is used to aid in testing
+/// the mocks used in unit testing.
 ///
-///     #stringify(x + y)
+/// ```Swift
+///     @StroblMock
+///     var notificationCenter: MockNotificationProviding!
+/// ```
 ///
-/// produces a tuple `(x + y, "x + y")`.
-@freestanding(expression)
-public macro stringify<T>(_ value: T) -> (T, String) = #externalMacro(module: "MacrosForStroblMocksMacros", type: "StringifyMacro")
+@attached(peer)
+public macro StroblMock() = #externalMacro(module: "MacrosForStroblMocksMacros", type: "StroblMockMacro")
