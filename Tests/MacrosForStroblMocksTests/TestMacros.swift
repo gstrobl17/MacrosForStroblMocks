@@ -10,5 +10,6 @@ import MacrosForStroblMocksMacros
 
 let testMacros: [String: Macro.Type] = [
     "StroblMock": StroblMockMacro.self,
+    "UsesStroblMocks": UsesStroblMocksMacro.self,
 ]
 #endif

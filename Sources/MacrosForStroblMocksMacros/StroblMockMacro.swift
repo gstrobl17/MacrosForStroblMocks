@@ -14,7 +14,6 @@ enum StroblMockMacroError: Error, CustomStringConvertible {
             return "\(name) only works on stored properties"
         }
     }
-
 }
 
 // Implementation of the `@StroblMock` macro. This macro doesn't generate any extra code.

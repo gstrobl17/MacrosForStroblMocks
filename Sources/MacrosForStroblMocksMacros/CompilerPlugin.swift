@@ -7,5 +7,6 @@ import SwiftSyntaxMacros
 struct MacrosForStroblMocksPlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
         StroblMockMacro.self,
+        UsesStroblMocksMacro.self,
     ]
 }
