@@ -56,5 +56,15 @@ let package = Package(
                 .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
             ]
         ),
+
+        // A test target used to verify the errors produced by the macros
+        .testTarget(
+            name: "MacrosForStroblMocksClientTests",
+            dependencies: [
+                "MacrosForStroblMocksClient",
+                "MacrosForStroblMocksMacros",
+                .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
+            ]
+        ),
     ]
 )

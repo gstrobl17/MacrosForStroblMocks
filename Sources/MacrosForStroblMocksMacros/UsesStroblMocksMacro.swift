@@ -113,9 +113,10 @@ public struct UsesStroblMocksMacro: MemberMacro {
                                 issues.append("'\\(name).\\(label)' == '\\(value)'")
                             }
                         }
-                        if !aCalledMethodsPropertyFound {
-                            issues.append("'\\(name)' does not appear to be a Strobl Mock. Neither '\(Constant.calledMethods)' or '\(Constant.calledStaticMethods)' properties were found.")
-                        }
+                    }
+            
+                    if !aCalledMethodsPropertyFound {
+                        issues.append("'\\(name)' does not appear to be a Strobl Mock. Neither '\(Constant.calledMethods)' or '\(Constant.calledStaticMethods)' properties were found.")
                     }
                 }
             

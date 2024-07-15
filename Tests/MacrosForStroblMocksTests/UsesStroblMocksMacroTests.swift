@@ -41,9 +41,10 @@ final class UsesStroblMocksMacroTests: XCTestCase {
                                     issues.append("'\\(name).\\(label)' == '\\(value)'")
                                 }
                             }
-                            if !aCalledMethodsPropertyFound {
-                                issues.append("'\\(name)' does not appear to be a Strobl Mock. Neither 'calledMethods' or 'calledStaticMethods' properties were found.")
-                            }
+                        }
+            
+                        if !aCalledMethodsPropertyFound {
+                            issues.append("'\\(name)' does not appear to be a Strobl Mock. Neither 'calledMethods' or 'calledStaticMethods' properties were found.")
                         }
                     }
             """
