@@ -17,7 +17,6 @@
 @attached(peer)
 public macro StroblMock() = #externalMacro(module: "MacrosForStroblMocksMacros", type: "StroblMockMacro")
 
-
 /// Use this macro on an ``XCTestCase`` to generate code to help test Strobl mocks not used in a specific test.
 ///
 /// Given a test class with mocks defined like the following:
