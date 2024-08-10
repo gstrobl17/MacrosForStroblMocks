@@ -7,15 +7,15 @@ public class MockJSONSerializing: JSONSerializing {
 
     // MARK: - Variables for Trackings Method Invocation
 
-    public struct StaticMethod: OptionSet {
+    public struct StaticMethod: OptionSet, Sendable {
         public let rawValue: UInt
         public init(rawValue: UInt) { self.rawValue = rawValue }
         public static let dataWithJSONObjectObjOptionsOptCalled = StaticMethod(rawValue: 1 << 0)
         public static let jsonObjectWithDataOptionsOptCalled = StaticMethod(rawValue: 1 << 1)
     }
-    private(set) public static var calledStaticMethods = StaticMethod()
+    nonisolated(unsafe) private(set) public static var calledStaticMethods = StaticMethod()
 
-    public struct StaticMethodParameter: OptionSet {
+    public struct StaticMethodParameter: OptionSet, Sendable {
         public let rawValue: UInt
         public init(rawValue: UInt) { self.rawValue = rawValue }
         public static let obj = StaticMethodParameter(rawValue: 1 << 0)
@@ -23,23 +23,23 @@ public class MockJSONSerializing: JSONSerializing {
         public static let data = StaticMethodParameter(rawValue: 1 << 2)
         public static let opt1 = StaticMethodParameter(rawValue: 1 << 3)
     }
-    private(set) public static var assignedStaticParameters = StaticMethodParameter()
+    nonisolated(unsafe) private(set) public static var assignedStaticParameters = StaticMethodParameter()
 
     // MARK: - Variables for Captured Parameter Values
 
-    private(set) public static var obj: Any?
-    private(set) public static var opt: JSONSerialization.WritingOptions?
-    private(set) public static var data: Data?
-    private(set) public static var opt1: JSONSerialization.ReadingOptions?
+    nonisolated(unsafe) private(set) public static var obj: Any?
+    nonisolated(unsafe) private(set) public static var opt: JSONSerialization.WritingOptions?
+    nonisolated(unsafe) private(set) public static var data: Data?
+    nonisolated(unsafe) private(set) public static var opt1: JSONSerialization.ReadingOptions?
 
     // MARK: - Variables to Use as Method Return Values
 
-    public static var dataWithJSONObjectObjOptionsOptReturnValue = Data()
-    public static var jsonObjectWithDataOptionsOptReturnValue: Any = ["a": "b"]
+    nonisolated(unsafe) public static var dataWithJSONObjectObjOptionsOptReturnValue = Data()
+    nonisolated(unsafe) public static var jsonObjectWithDataOptionsOptReturnValue: Any = ["a": "b"]
 
-    public static var errorToThrow: Error!
-    public static var dataWithJSONObjectObjOptionsOptShouldThrowError = false
-    public static var jsonObjectWithDataOptionsOptShouldThrowError = false
+    nonisolated(unsafe) public static var errorToThrow: Error!
+    nonisolated(unsafe) public static var dataWithJSONObjectObjOptionsOptShouldThrowError = false
+    nonisolated(unsafe) public static var jsonObjectWithDataOptionsOptShouldThrowError = false
 
     public func reset() {
         MockJSONSerializing.calledStaticMethods = []

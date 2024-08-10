@@ -7,7 +7,7 @@ public class MockSemaphore: MacrosForStroblMocksClient.Semaphore {
 
     // MARK: - Variables for Trackings Method Invocation
 
-    public struct Method: OptionSet {
+    public struct Method: OptionSet, Sendable {
         public let rawValue: UInt
         public init(rawValue: UInt) { self.rawValue = rawValue }
         public static let signalCalled = Method(rawValue: 1 << 0)

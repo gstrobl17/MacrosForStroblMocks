@@ -7,7 +7,7 @@ public class NonStroblCustomReflectableMock: CookieStoring {
 
     // MARK: - Variables for Trackings Method Invocation
 
-    public struct Method: OptionSet {
+    public struct Method: OptionSet, Sendable {
         public let rawValue: UInt
         public init(rawValue: UInt) { self.rawValue = rawValue }
         public static let setCookieCookieCalled = Method(rawValue: 1 << 0)
@@ -16,7 +16,7 @@ public class NonStroblCustomReflectableMock: CookieStoring {
     }
     private(set) public var calledMethods = Method()
 
-    public struct MethodParameter: OptionSet {
+    public struct MethodParameter: OptionSet, Sendable {
         public let rawValue: UInt
         public init(rawValue: UInt) { self.rawValue = rawValue }
         public static let cookie = MethodParameter(rawValue: 1 << 0)

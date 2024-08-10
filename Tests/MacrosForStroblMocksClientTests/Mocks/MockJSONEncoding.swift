@@ -7,14 +7,14 @@ public class MockJSONEncoding: JSONEncoding {
 
     // MARK: - Variables for Trackings Method Invocation
 
-    public struct Method: OptionSet {
+    public struct Method: OptionSet, Sendable {
         public let rawValue: UInt
         public init(rawValue: UInt) { self.rawValue = rawValue }
         public static let encodeValueCalled = Method(rawValue: 1 << 0)
     }
     private(set) public var calledMethods = Method()
 
-    public struct MethodParameter: OptionSet {
+    public struct MethodParameter: OptionSet, Sendable {
         public let rawValue: UInt
         public init(rawValue: UInt) { self.rawValue = rawValue }
         public static let value = MethodParameter(rawValue: 1 << 0)

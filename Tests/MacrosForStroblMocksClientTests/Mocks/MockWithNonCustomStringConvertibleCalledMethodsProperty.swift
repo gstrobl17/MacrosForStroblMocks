@@ -14,7 +14,7 @@ public class MockWithNonCustomStringConvertibleCalledMethodsProperty: CookieStor
 
     private(set) public var calledMethods = NonCustomStringConvertibleType(a: "", b: [])
 
-    public struct MethodParameter: OptionSet {
+    public struct MethodParameter: OptionSet, Sendable {
         public let rawValue: UInt
         public init(rawValue: UInt) { self.rawValue = rawValue }
         public static let cookie = MethodParameter(rawValue: 1 << 0)
