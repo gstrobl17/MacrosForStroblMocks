@@ -33,7 +33,7 @@ final class UsesStroblMocksMacroTests: XCTestCase {
                                 aCalledMethodsPropertyFound = true
                             }
                             if label == "calledMethods" || label == "assignedParameters" || label == "calledStaticMethods" || label == "assignedStaticParameters" {
-                                guard let value = value as? CustomStringConvertible else {
+                                guard let value = value as? any CustomStringConvertible else {
                                     issues.append("'\\(name)' does not appear to be a Strobl Mock. '\\(label)' is not CustomStringConvertible.")
                                     continue
                                 }
