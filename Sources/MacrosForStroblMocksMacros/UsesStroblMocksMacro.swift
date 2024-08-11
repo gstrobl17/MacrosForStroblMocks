@@ -92,7 +92,7 @@ public struct UsesStroblMocksMacro: MemberMacro {
             
                 func evaluate(_ name: String, mock: Any) {
                     // The mock must conform to CustomReflectable.
-                    guard let mock = mock as? CustomReflectable else {
+                    guard let mock = mock as? any CustomReflectable else {
                         issues.append("'\\(name)' does not appear to be a Strobl Mock. It does not conform to CustomReflectable.")
                         return
                     }
