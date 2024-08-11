@@ -105,7 +105,7 @@ public struct UsesStroblMocksMacro: MemberMacro {
                         guard let label else { continue }
                         if label == "\(Constant.calledMethods)" || label == "\(Constant.calledStaticMethods)" { aCalledMethodsPropertyFound = true }
                         if label == "\(Constant.calledMethods)" || label == "\(Constant.assignedParameters)" || label == "\(Constant.calledStaticMethods)" || label == "\(Constant.assignedStaticParameters)" {
-                            guard let value = value as? CustomStringConvertible else {
+                            guard let value = value as? any CustomStringConvertible else {
                                 issues.append("'\\(name)' does not appear to be a Strobl Mock. '\\(label)' is not CustomStringConvertible.")
                                 continue
                             }
