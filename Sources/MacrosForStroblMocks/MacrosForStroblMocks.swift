@@ -95,7 +95,7 @@ public macro StroblMock() = #externalMacro(module: "MacrosForStroblMocksMacros",
 /// }
 /// ```
 ///
-/// ## How to use verifyStroblMocksUnused(except:) in Swift Testing methods
+/// ## How to use verifyStroblMocksUnused(except:sourceLocation:) in Swift Testing methods
 /// If you have a test that will not cause any interaction with the Strobl mocks, you can write the test like this:
 /// ```
 /// @Test func something() {
@@ -123,5 +123,5 @@ public macro StroblMock() = #externalMacro(module: "MacrosForStroblMocksMacros",
 /// }
 /// ```
 ///
-@attached(member, names: named(StroblMock), named(verifyStroblMocksUnused(except:file:line:)))
+@attached(member, names: named(StroblMock), named(verifyStroblMocksUnused(except:file:line:)), named(verifyStroblMocksUnused(except:sourceLocation:)))
 public macro UsesStroblMocks() = #externalMacro(module: "MacrosForStroblMocksMacros", type: "UsesStroblMocksMacro")

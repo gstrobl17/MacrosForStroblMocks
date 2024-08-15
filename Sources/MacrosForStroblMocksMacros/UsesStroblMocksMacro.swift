@@ -129,8 +129,8 @@ public struct UsesStroblMocksMacro: MemberMacro {
     static func generateVerifyFunctionDecl(for stroblMocks: [VariableDeclSyntax]) -> DeclSyntax {
         generateCustomXCTAssertionFunctionDecl(
             for: stroblMocks,
-            functionDefinition: "func verifyStroblMocksUnused(except excludedMocks: Set<StroblMock> = [])",
-            failureCall: "Issue.record(message)"
+            functionDefinition: "func verifyStroblMocksUnused(except excludedMocks: Set<StroblMock> = [], sourceLocation: SourceLocation = #_sourceLocation)",
+            failureCall: "Issue.record(Comment(rawValue: message), sourceLocation: sourceLocation)"
         )
     }
 

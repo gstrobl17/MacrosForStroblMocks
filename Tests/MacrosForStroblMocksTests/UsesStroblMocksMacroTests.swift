@@ -404,7 +404,7 @@ final class UsesStroblMocksMacroTests: XCTestCase {
                     case mock2
                 }
             
-                func verifyStroblMocksUnused(except excludedMocks: Set<StroblMock> = []) {
+                func verifyStroblMocksUnused(except excludedMocks: Set<StroblMock> = [], sourceLocation: SourceLocation = #_sourceLocation) {
                     var issues = [String] ()
             
             \(expectedEvaluateFunctionDefinition)
@@ -421,7 +421,7 @@ final class UsesStroblMocksMacroTests: XCTestCase {
                             issues.insert("The following problems were identified:", at: 0)
                         }
                         let message = issues.joined(separator: "\\n\\t")
-                        Issue.record(message)
+                        Issue.record(Comment(rawValue: message), sourceLocation: sourceLocation)
                     }
                 }
             }
@@ -468,7 +468,7 @@ final class UsesStroblMocksMacroTests: XCTestCase {
                     case mock2
                 }
             
-                func verifyStroblMocksUnused(except excludedMocks: Set<StroblMock> = []) {
+                func verifyStroblMocksUnused(except excludedMocks: Set<StroblMock> = [], sourceLocation: SourceLocation = #_sourceLocation) {
                     var issues = [String] ()
             
             \(expectedEvaluateFunctionDefinition)
@@ -485,7 +485,7 @@ final class UsesStroblMocksMacroTests: XCTestCase {
                             issues.insert("The following problems were identified:", at: 0)
                         }
                         let message = issues.joined(separator: "\\n\\t")
-                        Issue.record(message)
+                        Issue.record(Comment(rawValue: message), sourceLocation: sourceLocation)
                     }
                 }
             }
@@ -532,7 +532,7 @@ final class UsesStroblMocksMacroTests: XCTestCase {
                     case mock2
                 }
             
-                func verifyStroblMocksUnused(except excludedMocks: Set<StroblMock> = []) {
+                func verifyStroblMocksUnused(except excludedMocks: Set<StroblMock> = [], sourceLocation: SourceLocation = #_sourceLocation) {
                     var issues = [String] ()
             
             \(expectedEvaluateFunctionDefinition)
@@ -549,7 +549,7 @@ final class UsesStroblMocksMacroTests: XCTestCase {
                             issues.insert("The following problems were identified:", at: 0)
                         }
                         let message = issues.joined(separator: "\\n\\t")
-                        Issue.record(message)
+                        Issue.record(Comment(rawValue: message), sourceLocation: sourceLocation)
                     }
                 }
             }
@@ -596,7 +596,7 @@ final class UsesStroblMocksMacroTests: XCTestCase {
                     case mock2
                 }
             
-                func verifyStroblMocksUnused(except excludedMocks: Set<StroblMock> = []) {
+                func verifyStroblMocksUnused(except excludedMocks: Set<StroblMock> = [], sourceLocation: SourceLocation = #_sourceLocation) {
                     var issues = [String] ()
             
             \(expectedEvaluateFunctionDefinition)
@@ -613,7 +613,7 @@ final class UsesStroblMocksMacroTests: XCTestCase {
                             issues.insert("The following problems were identified:", at: 0)
                         }
                         let message = issues.joined(separator: "\\n\\t")
-                        Issue.record(message)
+                        Issue.record(Comment(rawValue: message), sourceLocation: sourceLocation)
                     }
                 }
             }
