@@ -30,10 +30,21 @@ public macro StroblMock() = #externalMacro(module: "MacrosForStroblMocksMacros",
 ///     .
 /// }
 /// ```
+/// or a test struct
+/// ```Swift
+/// @UsesStroblMocks
+/// struct Tests {
+///     @StroblMock var mock1: Mock!
+///     @StroblMock var mock2: Mock!
+///     .
+///     .
+///     .
+/// }
+/// ```
 ///
 /// This macro will define two elements.
 ///
-/// 1. A **enum** that lists the **@StroblMock**
+/// 1. An **enum** that lists the **@StroblMock** instances
 /// ```Swift
 /// enum StroblMock {
 ///     case mock1
@@ -42,12 +53,21 @@ public macro StroblMock() = #externalMacro(module: "MacrosForStroblMocksMacros",
 /// ```
 /// The **enum** is for use by the second element. (But you can use it if you want/need.)
 ///
-/// 2. A helper custom XCT Assertion to eliminate the need to write `XCTAssertEquals(mock.calledMethods, [])` assertions
+/// 2. A helper method to eliminate the need to write either
+///    - `XCTAssertEquals(mock.calledMethods, [])` assertions
+///    - or `#expect(mock.calledMethods == [])` statements
+///
+/// For **XCTestCase** subclasses, the helper is a custom XCT Assertion:
 /// ```Swift
 ///  func verifyStroblMocksUnused(except excludedMocks: Set<StroblMock> = [], file: StaticString = #filePath, line: UInt = #line)
 /// ```
 ///
-/// ## How to use verifyStroblMocksUnused(except:file:line:)
+/// For Swift Testing **@Test** functions, the helper is a method:
+/// ```Swift
+///  func verifyStroblMocksUnused(except excludedMocks: Set<StroblMock> = []
+/// ```
+///
+/// ## How to use verifyStroblMocksUnused(except:file:line:) in XCTestCase subclasses
 /// If you have a test that will not cause any interaction with the Strobl mocks, you can write the test like this:
 /// ```
 /// func testSomething() {
@@ -72,6 +92,34 @@ public macro StroblMock() = #externalMacro(module: "MacrosForStroblMocksMacros",
 ///     XCTAssertEqual(mock1.calledMethods, [.someMethod])
 ///     XCTAssertEqual(mock1.assignedParameters, [])
 ///     XCTAssert ... whatever else needs to be tested
+/// }
+/// ```
+///
+/// ## How to use verifyStroblMocksUnused(except:) in Swift Testing methods
+/// If you have a test that will not cause any interaction with the Strobl mocks, you can write the test like this:
+/// ```
+/// @Test func something() {
+///     // Setup
+///
+///     // Call thing being tested
+///
+///     verifyStroblMocksUnused()
+///     #expect ... whatever needs to be tested
+/// }
+/// ```
+/// When this test is run, it will test whatever is being tested and, by calling `verifyStroblMocksUnused()`, verifies that the Strobl mocks weren't used too.
+///
+/// When you have a test that will use one or more of the Strobl mocks, you can write the test like this:
+/// ```
+/// @Test func somethingThatUsesMock1ButNotMock2() {
+///     // Setup
+///
+///     // Call thing being tested
+///
+///     verifyStroblMocksUnused(except: .mock1)
+///     #expect(mock1.calledMethods == [.someMethod])
+///     #expect(mock1.assignedParameters == [])
+///     #expect ... whatever else needs to be tested
 /// }
 /// ```
 ///

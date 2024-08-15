@@ -4,45 +4,36 @@ import SwiftSyntaxMacros
 import SwiftDiagnostics
 
 enum UsesStroblMocksMacrooError: Error, CustomStringConvertible {
-    case onlyWorksDirectlyOnClassDefinitions(String)
-    case onlyWorksOnClassDefinitions(String)
+    case onlyWorksDirectlyOnClassOrStructDefinitions(String)
     
     var description: String {
         switch self {
-        case .onlyWorksDirectlyOnClassDefinitions(let name):
-            return "\(name) only works directly on class definitions"
-        case .onlyWorksOnClassDefinitions(let name):
-            return "\(name) only works on class definitions"
+        case .onlyWorksDirectlyOnClassOrStructDefinitions(let name):
+            return "\(name) only works directly on class or struct definitions"
         }
     }
 }
 
 enum UsesStroblMocksMacroDiagnostic: DiagnosticMessage {
-    case unexpectedSuperClass(String)
-    case classContainsNoStroblMocks
+    case classOrStructContainsNoStroblMocks
     
     var severity: DiagnosticSeverity {
         switch self {
-        case .unexpectedSuperClass: return .warning
-        case .classContainsNoStroblMocks: return .warning
+        case .classOrStructContainsNoStroblMocks: return .warning
         }
     }
     
     var message: String {
         switch self {
-        case .unexpectedSuperClass(let name):
-            return "\(name) is expected to be used on a direct subclass of \(Constant.testSuperClass)"
-        case .classContainsNoStroblMocks:
+        case .classOrStructContainsNoStroblMocks:
             return "No @\(Constant.stroblMock) definitions found"
         }
     }
     
     var diagnosticID: MessageID {
         switch self {
-        case .unexpectedSuperClass:
-            return MessageID(domain: Constant.macrosForStroblMocks, id: "UnexpectedSuperClass")
-        case .classContainsNoStroblMocks:
-            return MessageID(domain: Constant.macrosForStroblMocks, id: "ClassContainsNoStroblMocks")
+        case .classOrStructContainsNoStroblMocks:
+            return MessageID(domain: Constant.macrosForStroblMocks, id: "ClassOrStructContainsNoStroblMocks")
         }
     }
 }
@@ -54,40 +45,102 @@ public struct UsesStroblMocksMacro: MemberMacro {
         providingMembersOf declaration: some DeclGroupSyntax,
         in context: some MacroExpansionContext
     ) throws -> [DeclSyntax] {
+        // @UsesStrobgMocks can't be put on an extension
         if declaration.is(ExtensionDeclSyntax.self) {
-            throw UsesStroblMocksMacrooError.onlyWorksDirectlyOnClassDefinitions(node.trimmedDescription)
-        }
-        guard let classDecl = declaration.as(ClassDeclSyntax.self) else {
-            throw UsesStroblMocksMacrooError.onlyWorksOnClassDefinitions(node.trimmedDescription)
-        }
-        
-        // The macro is expected to be applied to a class directly subclassing XCTestCase.
-        //  If it doesn't, supply a warning.
-        if classDecl.inheritanceClause?.inheritedTypes.first?.trimmedDescription != Constant.testSuperClass {
-            let subclassWarning = Diagnostic(node: classDecl, message: UsesStroblMocksMacroDiagnostic.unexpectedSuperClass(node.trimmedDescription))
-            context.diagnose(subclassWarning)
+            throw UsesStroblMocksMacrooError.onlyWorksDirectlyOnClassOrStructDefinitions(node.trimmedDescription)
         }
         
         // Find all properties that are annotated as a @StroblMock
-        let stroblMocks = classDecl.memberBlock.members.compactMap { $0.decl.as(VariableDeclSyntax.self) }
-            .filter { $0.attributes.contains { $0.as(AttributeSyntax.self)?.attributeName.trimmedDescription == Constant.stroblMock }}
+        let stroblMocks = findStroblMocks(in: declaration)
         guard !stroblMocks.isEmpty else {
-            let noStroblMocksWarning = Diagnostic(node: classDecl, message: UsesStroblMocksMacroDiagnostic.classContainsNoStroblMocks)
+            let noStroblMocksWarning = Diagnostic(node: declaration, message: UsesStroblMocksMacroDiagnostic.classOrStructContainsNoStroblMocks)
             context.diagnose(noStroblMocksWarning)
             return []
         }
-        
+
         // Generate an enum with definitions for each Strobl mock
-        let enumDecl = EnumDeclSyntax(name: TokenSyntax(stringLiteral: Constant.stroblMock)) {
+        let enumDecl = generateEnum(for: stroblMocks)
+
+        // If the declaration is a class that subclasses XCTestCase, generate a custom XCT assertion
+        if let classDecl = declaration.as(ClassDeclSyntax.self),
+           classDecl.inheritanceClause?.inheritedTypes.first?.trimmedDescription == Constant.testSuperClass {
+
+            // Generate a custom XCT Assertion to call to test for empty called methods/assigned parameters option sets in Strobl Mocks
+            let funcDecl = generateCustomXCTAssertionFunctionDecl(for: stroblMocks)
+            
+            return [enumDecl.as(DeclSyntax.self)!, funcDecl]
+        }
+        
+        // Look for @Test functions. If none are found, don't generate any output. We can be sure that
+        //  Swift testing is being used or not.
+        if containsTestFunctions(in: declaration) {
+            
+            // Generate Swift testing friendly "verify" function empty called methods/assigned parameters option sets in Strobl Mocks
+            let funcDecl = generateVerifyFunctionDecl(for: stroblMocks)
+            
+            return [enumDecl.as(DeclSyntax.self)!, funcDecl]
+        }
+
+        // The declaration isn't an XCTestCase subclass or a containser of @Test funcs.
+        return []
+    }
+    
+    static func findStroblMocks(in declaration: some DeclGroupSyntax) -> [VariableDeclSyntax] {
+        declaration.memberBlock.members.compactMap { $0.decl.as(VariableDeclSyntax.self) }
+            .filter { $0.attributes.contains { $0.as(AttributeSyntax.self)?.attributeName.trimmedDescription == Constant.stroblMock }}
+    }
+
+    static func generateEnum(for stroblMocks: [VariableDeclSyntax]) -> EnumDeclSyntax {
+        // Generate an enum with definitions for each Strobl mock
+        EnumDeclSyntax(name: TokenSyntax(stringLiteral: Constant.stroblMock)) {
             for varDecl in stroblMocks {
                 let mockName = varDecl.bindings.first?.pattern.trimmedDescription ?? "??"
                 DeclSyntax(stringLiteral: "case \(mockName)")
             }
         }
+    }
+
+    static func containsTestFunctions(in declaration: some DeclGroupSyntax) -> Bool {
+        // Look for @Test func definitions that are members of the declaration
+        let testFunctions = declaration.memberBlock.members.compactMap { $0.decl.as(FunctionDeclSyntax.self) }
+            .filter { $0.attributes.contains { $0.as(AttributeSyntax.self)?.attributeName.trimmedDescription == Constant.testAnnotation }}
+        guard testFunctions.isEmpty else { return true }
         
-        // Generate a custom XCT Assertion to call to test for empty called methods/assigned parameters option sets in Strobl Mocks
+        // No @Test funcs found. Check in any sub-declarations
+        var subDeclarations = [DeclGroupSyntax]()
+        subDeclarations.append(contentsOf: declaration.memberBlock.members.compactMap { $0.decl.as(StructDeclSyntax.self) })
+        subDeclarations.append(contentsOf: declaration.memberBlock.members.compactMap { $0.decl.as(ClassDeclSyntax.self) })
+        subDeclarations.append(contentsOf: declaration.memberBlock.members.compactMap { $0.decl.as(EnumDeclSyntax.self) })
+        guard !subDeclarations.isEmpty else { return false }
+        for declaration in subDeclarations {
+            guard !containsTestFunctions(in: declaration) else { return true }
+        }
+        return false
+    }
+
+    static func generateCustomXCTAssertionFunctionDecl(for stroblMocks: [VariableDeclSyntax]) -> DeclSyntax {
+        generateCustomXCTAssertionFunctionDecl(
+            for: stroblMocks,
+            functionDefinition: "func verifyStroblMocksUnused(except excludedMocks: Set<StroblMock> = [], file: StaticString = #filePath, line: UInt = #line)",
+            failureCall: "XCTFail(message, file: file, line: line)"
+        )
+    }
+
+    static func generateVerifyFunctionDecl(for stroblMocks: [VariableDeclSyntax]) -> DeclSyntax {
+        generateCustomXCTAssertionFunctionDecl(
+            for: stroblMocks,
+            functionDefinition: "func verifyStroblMocksUnused(except excludedMocks: Set<StroblMock> = [])",
+            failureCall: "Issue.record(message)"
+        )
+    }
+
+    static func generateCustomXCTAssertionFunctionDecl(
+        for stroblMocks: [VariableDeclSyntax],
+        functionDefinition: String,
+        failureCall: String
+    ) -> DeclSyntax {
         var functionString = """
-            func verifyStroblMocksUnused(except excludedMocks: Set<StroblMock> = [], file: StaticString = #filePath, line: UInt = #line) {
+            \(functionDefinition) {
                 var issues = [String]()
             
                 func evaluate(_ name: String, mock: Any) {
@@ -144,13 +197,12 @@ public struct UsesStroblMocksMacro: MemberMacro {
                         issues.insert("The following problems were identified:", at: 0)
                     }
                     let message = issues.joined(separator: \"\\n\\t\")
-                    XCTFail(message, file: file, line: line)
+                    \(failureCall)
                 }
             }
             """
         let funcDecl = DeclSyntax(stringLiteral: functionString)
-        
-        return [enumDecl.as(DeclSyntax.self)!, funcDecl]
+        return funcDecl
     }
     
 }
