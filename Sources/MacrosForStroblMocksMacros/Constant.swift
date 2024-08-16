@@ -8,6 +8,7 @@ enum Constant {
     static let emptySet = "[]"
     static let macrosForStroblMocks = "MacrosForStroblMocks"
     static let stroblMock = "StroblMock"
+    static let testAnnotation = "Test"
     static let testSuperClass = "XCTestCase"
     static let usesStroblMocks = "UsesStroblMocks"
 }
