@@ -115,7 +115,14 @@ final class UsesStroblMocksMacroTests: XCTestCase {
                 var mock2: Mock!
             }
             """,
-            diagnostics: [],
+            diagnostics: [
+                DiagnosticSpec(
+                    message: "No @Test funcs found for @UsesStroblMocks annotation",
+                    line: 1,
+                    column: 1,
+                    severity: .warning
+                )
+            ],
             macros: testMacros
         )
 #else
@@ -265,7 +272,14 @@ final class UsesStroblMocksMacroTests: XCTestCase {
                 }
             }
             """,
-            diagnostics: [],
+            diagnostics: [
+                DiagnosticSpec(
+                    message: "No @Test funcs found for @UsesStroblMocks annotation",
+                    line: 1,
+                    column: 1,
+                    severity: .warning
+                )
+            ],
             macros: testMacros
         )
 #else
@@ -316,7 +330,14 @@ final class UsesStroblMocksMacroTests: XCTestCase {
                 var mock2: Mock!
             }
             """,
-            diagnostics: [],
+            diagnostics: [
+                DiagnosticSpec(
+                    message: "No @Test funcs found for @UsesStroblMocks annotation",
+                    line: 1,
+                    column: 1,
+                    severity: .warning
+                )
+            ],
             macros: testMacros
         )
 #else
@@ -340,7 +361,14 @@ final class UsesStroblMocksMacroTests: XCTestCase {
                 var mock2: Mock!
             }
             """,
-            diagnostics: [],
+            diagnostics: [
+                DiagnosticSpec(
+                    message: "No @Test funcs found for @UsesStroblMocks annotation",
+                    line: 1,
+                    column: 1,
+                    severity: .warning
+                )
+            ],
             macros: testMacros
         )
 #else
@@ -364,7 +392,14 @@ final class UsesStroblMocksMacroTests: XCTestCase {
                 var mock2: Mock!
             }
             """,
-            diagnostics: [],
+            diagnostics: [
+                DiagnosticSpec(
+                    message: "No @Test funcs found for @UsesStroblMocks annotation",
+                    line: 1,
+                    column: 1,
+                    severity: .warning
+                )
+            ],
             macros: testMacros
         )
 #else

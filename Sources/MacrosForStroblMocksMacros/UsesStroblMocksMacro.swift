@@ -16,10 +16,12 @@ enum UsesStroblMocksMacrooError: Error, CustomStringConvertible {
 
 enum UsesStroblMocksMacroDiagnostic: DiagnosticMessage {
     case classOrStructContainsNoStroblMocks
-    
+    case classOrStructContainsNoTestFunctions
+
     var severity: DiagnosticSeverity {
         switch self {
         case .classOrStructContainsNoStroblMocks: return .warning
+        case .classOrStructContainsNoTestFunctions: return .warning
         }
     }
     
@@ -27,6 +29,8 @@ enum UsesStroblMocksMacroDiagnostic: DiagnosticMessage {
         switch self {
         case .classOrStructContainsNoStroblMocks:
             return "No @\(Constant.stroblMock) definitions found"
+        case .classOrStructContainsNoTestFunctions:
+            return "No @Test funcs found for @\(Constant.usesStroblMocks) annotation"
         }
     }
     
@@ -34,6 +38,8 @@ enum UsesStroblMocksMacroDiagnostic: DiagnosticMessage {
         switch self {
         case .classOrStructContainsNoStroblMocks:
             return MessageID(domain: Constant.macrosForStroblMocks, id: "ClassOrStructContainsNoStroblMocks")
+        case .classOrStructContainsNoTestFunctions:
+            return MessageID(domain: Constant.macrosForStroblMocks, id: "ClassOrStructContainsNoTestFuncs")
         }
     }
 }
@@ -81,7 +87,11 @@ public struct UsesStroblMocksMacro: MemberMacro {
             return [enumDecl.as(DeclSyntax.self)!, funcDecl]
         }
 
-        // The declaration isn't an XCTestCase subclass or a containser of @Test funcs.
+        // The declaration isn't an XCTestCase subclass or a containser of any @Test funcs.
+        // Provide a dianostic warning so that if the user is trying to find the "verifyStroblMocksUnused"
+        // method, they have a clue as to why it doesn't exist.
+        let noTestFuncsWarning = Diagnostic(node: declaration, message: UsesStroblMocksMacroDiagnostic.classOrStructContainsNoTestFunctions)
+        context.diagnose(noTestFuncsWarning)
         return []
     }
     
