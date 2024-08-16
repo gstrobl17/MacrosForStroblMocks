@@ -439,7 +439,7 @@ final class UsesStroblMocksMacroTests: XCTestCase {
                     case mock2
                 }
             
-                func verifyStroblMocksUnused(except excludedMocks: Set<StroblMock> = [], sourceLocation: SourceLocation = #_sourceLocation) {
+                func verifyStroblMocksUnused(except excludedMocks: Set<StroblMock> = [], sourceLocation: Testing.SourceLocation = #_sourceLocation) {
                     var issues = [String] ()
             
             \(expectedEvaluateFunctionDefinition)
@@ -503,7 +503,7 @@ final class UsesStroblMocksMacroTests: XCTestCase {
                     case mock2
                 }
             
-                func verifyStroblMocksUnused(except excludedMocks: Set<StroblMock> = [], sourceLocation: SourceLocation = #_sourceLocation) {
+                func verifyStroblMocksUnused(except excludedMocks: Set<StroblMock> = [], sourceLocation: Testing.SourceLocation = #_sourceLocation) {
                     var issues = [String] ()
             
             \(expectedEvaluateFunctionDefinition)
@@ -567,7 +567,7 @@ final class UsesStroblMocksMacroTests: XCTestCase {
                     case mock2
                 }
             
-                func verifyStroblMocksUnused(except excludedMocks: Set<StroblMock> = [], sourceLocation: SourceLocation = #_sourceLocation) {
+                func verifyStroblMocksUnused(except excludedMocks: Set<StroblMock> = [], sourceLocation: Testing.SourceLocation = #_sourceLocation) {
                     var issues = [String] ()
             
             \(expectedEvaluateFunctionDefinition)
@@ -631,7 +631,7 @@ final class UsesStroblMocksMacroTests: XCTestCase {
                     case mock2
                 }
             
-                func verifyStroblMocksUnused(except excludedMocks: Set<StroblMock> = [], sourceLocation: SourceLocation = #_sourceLocation) {
+                func verifyStroblMocksUnused(except excludedMocks: Set<StroblMock> = [], sourceLocation: Testing.SourceLocation = #_sourceLocation) {
                     var issues = [String] ()
             
             \(expectedEvaluateFunctionDefinition)
